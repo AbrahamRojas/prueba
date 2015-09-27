@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <meta name="viewport" content="width=device-width"/>
+        <link rel="stylesheet" href="js/jquery.mobile-1.4.5.min.css">
+<script src="js/jquery.min.js"></script>
+        <script src="js/angular.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="Alertas/sweetalert.css">
+              <script src="Alertas/sweetalert.min.js"></script>
+        <!--------MANDAR LLAMAR CONTACTOS------->
+<script>
+    var app = angular.module('intellisense', []);
+    app.controller('UsersController', function ($scope, $http) {
+        $scope.items = {};
+        var ruta = "http://www.empowerlabs.com/intellibanks/data/BSPFuerzaVentasV2/Consulta.php?usuario=" + userIntelliabnks + "";
+        $http.get(ruta).success(function (data) {
+            $scope.items = data;
+
+        });
+    });
+    app.controller('UsersControllerDos', function ($scope, $http) {
+        $scope.items = {};
+        $http.get('http://www.empowerlabs.com/intellibanks/data/BSPFuerzaVentasV2/WebService.php?usuario=Main.' + userIntelliabnks + '').success(function (data) {
+            $scope.items = data;
+
+        });
+    });
+    app.controller('UsersControllerEC', function ($scope, $http) {
+        $scope.items = {};
+        $http.get('http://www.empowerlabs.com/intellibanks/data/BSPFuerzaVentasV2/Comunicados.php').success(function (data) {
+            $scope.items = data;
+
+        });
+    });
+</script>
+       
+    </head>
+    <body ng-app="intellisense" onload="Cargarvalor();">
+        <link rel='stylesheet' href='http://empowerlabs.com/archivos/Eric/EricTRansformation/Agenda/jquery-ui.min.css' /> <link href='http://empowerlabs.com/conf/archivos/Eric/EricTRansformation/Agenda/fullcalendar.css' rel='stylesheet' /> <link href='http://empowerlabs.com/conf/archivos/Eric/EricTRansformation/Agenda/fullcalendar.print.css' rel='stylesheet' media='print' /> <script src='http://empowerlabs.com/conf/archivos/Eric/EricTRansformation/Agenda/lib/moment.min.js'></script> <script src='http://empowerlabs.com/conf/archivos/Eric/EricTRansformation/Agenda/lib/jquery.min.js'></script> <script src='http://empowerlabs.com/conf/archivos/Eric/EricTRansformation/Agenda/fullcalendar.min.js'></script> <script src='http://empowerlabs.com/conf/archivos/Eric/EricTRansformation/Agenda/lang-all.js'></script> <script>
+
+   $(document).ready(function() {
+
+      ////////////////7
+      var currentLangCode = 'en';
+
+      // build the language selector's options
+      $.each($.fullCalendar.langs, function(langCode) {
+         $('#lang-selector').append(
+            $('<option/>')
+               .attr('value', langCode)
+               .prop('selected', langCode == currentLangCode)
+               .text(langCode)
+         );
+      });
+
+      // rerender the calendar when the selected option changes
+      $('#lang-selector').on('change', function() {
+         if (this.value) {
+            currentLangCode = this.value;
+            $('#calendar').fullCalendar('destroy');
+            renderCalendar();
+         }
+      });
+
+      
+      var currentTimezone = false;
+
+      // load the list of available timezones
+      $.getJSON('http://www.empowerlabs.com/intellibanks/data/BSPFuerzaVentasV2/getActEvent.php?Agent=Main.'+ userIntelliabnks, function(timezones) {
+         $.each(timezones, function(i, timezone) {
+            if (timezone != 'UTC') { // UTC is already in the list
+               $('#timezone-selector').append(
+                  $("<option/>").text(timezone).attr('value', timezone)
+               );
+            }
+         });
+      });
+
+      // when the timezone selector changes, rerender the calendar
+      $('#timezone-selector').on('change', function() {
+         currentTimezone = this.value || false;
+         $('#calendar').fullCalendar('destroy');
+         renderCalendar();
+      });
+
+      function renderCalendar() {
+         $('#calendar').fullCalendar({
+            defaultView: 'agendaDay',
+            header: {
+               left: 'prev,next today',
+               center: 'title',
+               right: 'agendaDay,agendaWeek,month'
+            },
+            lang: currentLangCode,
+            timezone: currentTimezone,
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            events: {
+               url: 'http://www.empowerlabs.com/intellibanks/data/BSPFuerzaVentasV2/getActEvent.php?Agent=Main.'+ userIntelliabnks,
+               error: function() {
+                  $('#script-warning').show();
+               }
+            },
+            loading: function(bool) {
+               $('#loading').toggle(bool);
+            },
+            eventRender: function(event, el) {
+               // render the timezone offset below the event title
+               if (event.start.hasZone()) {
+                  el.find('.fc-title').after(
+                     $('<div class="tzo"/>').text(event.start.format('Z'))
+                  );
+               }
+            }
+         });
+      }
+
+      renderCalendar();
+   });
+
+</script> 
+        <style>
+
+   body {
+      margin: 0;
+      padding: 0;
+      font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+      font-size: 14px;
+   }
+
+   #top {
+      background: #eee;
+      border-bottom: 1px solid #ddd;
+      padding: 0 10px;
+      line-height: 40px;
+      font-size: 12px;
+   }
+   .left { float: left }
+   .right { float: right }
+   .clear { clear: both }
+
+   #script-warning, #loading { display: none }
+   #script-warning { font-weight: bold; color: red }
+
+   #calendar {
+    
+      margin: 1px auto;
+      padding: 0 7px;
+   }
+
+   .tzo {
+      color: #000;
+   }
+
+</style>
+        <style>
+#myTable th {
+    border-bottom: 1px solid #d6d6d6;
+}
+#myTable tr{
+    background: #e9e9e9;
+}
+#myTable tr:nth-child(even) {
+    background: #fff;
+}
+            #myTable2 th {
+    border-bottom: 1px solid #d6d6d6;
+}
+#myTable2 tr{
+    background: #e9e9e9;
+}
+#myTable2 tr:nth-child(even) {
+    background: #fff;
+}
+#myTableEC th {
+    border-bottom: 1px solid #d6d6d6;
+}
+#myTableEC tr{
+    background: #e9e9e9;
+}
+#myTableEC tr:nth-child(even) {
+    background: #fff;
+}         
+            
+            
+            
+            
+            
+</style>
+
+
+
+       
+
+        <!-------------CARGAR USUARIO------------->
+        <script type="text/javascript">
+            var userIntelliabnks = "";
+         
+                var paramstr = window.location.search.substr(1);
+                var paramarr = paramstr.split("&");
+                var params = {};
+
+                for (var i = 0; i < paramarr.length; i++) {
+                    var tmparr = paramarr[i].split("=");
+                    params[tmparr[0]] = tmparr[1];
+                }
+                if (params['nombre']) {
+                   
+                    userIntelliabnks = params['nombre'];
+                    
+                } else {
+                    console.log('No se envió el parámetro variable');
+                }
+     
+            
+</script>
+<div id="top" style="z-index: 2;">
+      <div class="left"> 
+         <!--select id='timezone-selector'>
+            <option value='' selected>none</option>
+            <option value='local'>local</option>
+            <option value='UTC'>UTC</option>
+         </select--> 
+      </div>
+      <div class="right"> 
+         <span id="loading">loading...</span>
+       </div>
+      <div class="clear"> 
+      </div>
+</div>
+        <script type="text/javascript">
+            function activar1() {
+                var mAgenda = document.getElementById("agenda");
+                mAgenda.css("background-color", "#F67F00");
+            }
+            function activar2() {
+                var mContactos = document.getElementById("contactos");
+                mContactos.css("background-color", "#F67F00");
+            }
+            function activar3() {
+                var mVentas = document.getElementById("ventas");
+                mVentas.css("background-color", "#F67F00");
+            }
+        </script>
+        <script>
+            function usuario() {
+                alert('http://www.empowerlabs.com/intellibanks/data/BSPFuerzaVentasV2/Consulta.php?usuario='+userIntelliabnks+'');
+            }
+        </script>
+        <!-----AGENDA-->
+<div data-role="page" id="pageone">
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1><a href="#myPopup" data-rel="popup" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-grid ui-btn-icon-notext ui-btn-right">Close</a>
+        <div data-role="navbar">
+          <ul>
+            <li><a  style="background:#cacaca;" href="#pageone" class="ui-icon-calendar ui-btn-icon-bottom">Agenda</a></li>
+            <li><a href="#page2" data-transition="slide" class="ui-icon-user ui-btn-icon-bottom">Contactos</a></li>
+            <li><a href="#page3" data-transition="slide" class="ui-icon-shop ui-btn-icon-bottom">Ventas</a></li>
+          </ul>
+        </div>
+    </div>
+    <div data-role="main" class="ui-content">
+        <!--center><a href="#" class="ui-btn ui-btn-inline ui-corner-all ui-icon-plus ui-btn-icon-left">Agregar actividad</a></center><!----->
+        <div id="calendar" style="width: 100%; height: 100%; z-index: 1;"></div><!---->
+            <div data-role="popup" id="myPopup" class="ui-content">
+                <div data-role="controlgroup" data-type="vertical">
+                    <a href="#comunicador" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-comment ui-btn-icon-left">Comunicados</a>
+                    <a href="#ChangePass" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-gear ui-btn-icon-left">Cambiar contraseña</a>
+                    <a onclick="index();" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-power ui-btn-icon-left">Salir</a>
+                </div>
+            </div>
+    </div>
+</div> 
+        <script>
+            function index() {
+                location.href = "index.html";
+            }
+        </script>
+        <!---------------CAMBIAR PASS------------------->
+<div data-role="page" id="ChangePass">
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <input type="password" name="PassActual" id="PassActual" placeholder="Contraseña actual">
+        <input type="password" name="PassNueva" id="PassNueva" placeholder="Contraseña nueva">
+        <input type="password" name="PassNueva2" id="PassNueva2" placeholder="Confirmar contraseña" >
+        <a id="GPass" onclick="Reset();" class="ui-btn ui-corner-all ui-icon-check ui-btn-icon-left">Guardar</a>
+        <a href="#" data-rel="back" data-transition="slide" data-direction="reverse" class="ui-btn ui-corner-all ui-icon-delete ui-btn-icon-left">Cancelar</a>        
+    </div>
+</div> 
+        <!------------MANDAR RESET PASSS---------------->
+        <script type="text/javascript">
+                var VerPass = "";
+                var VerPass2 = "";
+            function Reset() {
+                var userA = document.getElementById("PassActual").value;
+                var pass = document.getElementById("PassNueva").value;
+                var pass2 = document.getElementById("PassNueva2").value;
+                var rutaVer = "http://www.empowerlabs.com/AppBSystemPromotoria/pass.php?usuario=" + userIntelliabnks + "&pass=" + userA;
+                var rutaVer2 = "http://www.empowerlabs.com/AppBSystemPromotoria/ResetPass.php?usuario="+userIntelliabnks+"&pass=" + userA + "&reset=" + pass;
+                if (pass == pass2) {
+                    $.ajax({
+                        type: "POST",
+                        url: rutaVer,
+                        async: true,
+                        success: function (datos) {
+                            var dataJson = eval(datos);
+                            var validaruser = false;
+                            var validarpass = false;
+                            for (var i in dataJson) {
+
+                                VerPass = dataJson[i].logueo;
+                               
+                            }
+                            if (VerPass == "True") {
+                                //////////
+                                $.ajax({
+                                    type: "POST",
+                                    url: rutaVer2,
+                                    async: true,
+                                    success: function (datos) {
+                                    },
+                                    error: function (obj, error, objError) {
+                                    }
+                                });
+                                swal("Contraseña", "Actualizada", "success");
+                                //////
+                            } else {
+                                swal("Precaución", "Verifique su contraseña actual", "error");
+                            }
+                        },
+                        error: function (obj, error, objError) {
+                        }
+                    });
+                } else {
+                    swal("Precaución", "No coinciden las contraseñas", "error");
+                }
+            }
+        </script>
+
+
+        <!-------CONTACTOS----->
+<div data-role="page" id="page2">
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1><a href="#myPopup2" data-rel="popup" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-grid ui-btn-icon-notext ui-btn-right">Close</a>
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#pageone" data-transition="slide" data-direction="reverse" class="ui-icon-calendar ui-btn-icon-bottom">Agenda</a></li>
+            <li><a href="#page2" style="background:#cacaca;" class="ui-icon-user ui-btn-icon-bottom">Contactos</a></li>
+            <li><a href="#page3" data-transition="slide"  class="ui-icon-shop ui-btn-icon-bottom">Ventas</a></li>
+          </ul>
+        </div>
+    </div>
+    <!-----------AQUI INICIA EL DE BUSCAR--------------->
+
+     <!------------Inicia Script Busqueda Contacto--------------->
+        <script>
+    $(document).ready(function(){
+
+        $("#tfBuscar").on("keyup", buscar);
+        function buscar() {
+            var tarjetas = $(".tarjeta");
+            var texto = $("#tfBuscar").val();
+            texto = texto.toLowerCase();
+            tarjetas.show();
+            for (var i = 0; i < tarjetas.size(); i++) {
+                var contenido = tarjetas.eq(i).text();
+                contenido = contenido.toLowerCase();
+                var index = contenido.indexOf(texto);
+                if (index == -1) {
+                    tarjetas.eq(i).hide();
+                }
+            }
+        }
+    });
+
+</script>
+
+  <!------------Finaliza Script Busqueda Contacto--------------->
+
+        <!-----------AQUI FINALIZA EL DE BUSCAR--------------->
+
+    <div data-role="main" class="ui-content">
+        <!--center><a href="#" class="ui-btn ui-btn-inline ui-corner-all ui-icon-plus ui-btn-icon-left">Nuevo contacto</a></center><!----->
+               <input type="text" name="tfBuscar" id="tfBuscar" placeholder="Buscar"><!---------Campo buscar-->
+
+             <div ng-controller="UsersController">
+                 <table  data-role="table" class="ui-responsive ui-shadow" id="myTable">
+                      <thead>
+                          <tr style="background: #dddddd">
+                              <th data-priority="1"></th>
+                            </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="item in items" class="tarjeta" >
+                          <td data-transition="slide" data-icon="minus" id="{{item.saludo}}?{{item.nombre}}?{{item.tipo}}?{{item.celular}}?{{item.email}}?{{item.Asesor}}?{{item.empresa}}?{{item.telefono}}?{{item.fax}}?{{item.skype}}?{{item.url}}?{{item.empresa}}?{{item.status}}?{{item.comentario}}" onclick='verContacto(this.id);' >{{item.tipo}}: {{item.saludo}} {{item.nombre}}<br>{{item.celular}}<br>{{item.email}}</td>
+                        </tr>
+                      </tbody>
+                </table>
+            </div>
+                <div data-role="popup" id="myPopup2" class="ui-content">
+                <div data-role="controlgroup" data-type="vertical">
+                    <a href="#comunicador" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-comment ui-btn-icon-left">Comunicados</a>
+                    <a href="#ChangePass" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-gear ui-btn-icon-left">Cambiar contraseña</a>
+                    <a onclick="index();" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-power ui-btn-icon-left">Salir</a>
+                </div>
+            </div>
+    </div>
+</div> 
+        <!-----------------COMUNICADOS--------------->
+        <div data-role="page" id="comunicador">
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1><a href="#myPopupEC" data-rel="popup" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-grid ui-btn-icon-notext ui-btn-right">Close</a>
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#pageone" data-transition="slide" data-direction="reverse" class="ui-icon-calendar ui-btn-icon-bottom">Agenda</a></li>
+            <li><a href="#page2" data-transition="slide" data-direction="reverse" class="ui-icon-user ui-btn-icon-bottom">Contactos</a></li>
+            <li><a href="#page3" data-transition="slide" data-direction="reverse"  class="ui-icon-shop ui-btn-icon-bottom">Ventas</a></li>
+          </ul>
+        </div>
+    </div>
+    <div data-role="main" class="ui-content">
+        <!--center><a href="#" class="ui-btn ui-btn-inline ui-corner-all ui-icon-plus ui-btn-icon-left">Nuevo contacto</a></center><!----->
+       
+             <div ng-controller="UsersControllerEC">
+                 <table  data-role="table" class="ui-responsive ui-shadow" id="myTableEC">
+                      <thead>
+                          <tr style="background: #dddddd">
+                              <th data-priority="1"></th>
+                            </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="item in items" >
+                          <td data-transition="slide" data-icon="minus" id="{{item.Topic}}/{{item.Subject}}/{{item.Description}}/{{item.Author}}/{{item.Category}}/{{item.Area}}/{{item.Priority}}/{{item.Date}}/{{item.Active}}" onclick='verEC(this.id);' >{{item.Topic}}: {{item.Subject}} <br>Prioridad: {{item.Priority}}<br>{{item.Date}}</td>
+                        </tr>
+                      </tbody>
+                </table>
+            </div>
+                <div data-role="popup" id="myPopupEC" class="ui-content">
+                <div data-role="controlgroup" data-type="vertical">
+                    <a href="#ChangePass" class="ui-btn ui-corner-all ui-btn ui-icon-gear ui-btn-icon-left">Cambiar contraseña</a>
+                    <a onclick="index();" class="ui-btn ui-corner-all ui-btn ui-icon-power ui-btn-icon-left">Salir</a>
+                </div>
+            </div>
+    </div>
+</div> 
+
+         <!------------Inicia Script Busqueda Ventas--------------->
+        <script>
+    $(document).ready(function(){
+
+        $("#tfBuscar2").on("keyup", buscar2);
+        function buscar2() {
+            var tarjetas2 = $(".tarjeta2");
+            var texto2 = $("#tfBuscar2").val();
+            texto2 = texto2.toLowerCase();
+            tarjetas2.show();
+            for (var l = 0; l < tarjetas2.size(); l++) {
+                var contenido2 = tarjetas2.eq(l).text();
+                contenido2 = contenido2.toLowerCase();
+                var index2 = contenido2.indexOf(texto2);
+                if (index2 == -1) {
+                    tarjetas2.eq(l).hide();
+                }
+            }
+        }
+    });
+
+</script>
+
+  <!------------Finaliza Script Busqueda Ventas--------------->
+
+  
+
+        <!---------Ventas-------->
+<div data-role="page" id="page3">
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1><a href="#myPopup3" data-rel="popup" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-grid ui-btn-icon-notext ui-btn-right">Close</a>
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#pageone" data-transition="slide" data-direction="reverse" class="ui-icon-calendar ui-btn-icon-bottom">Agenda</a></li>
+            <li><a href="#page2" data-transition="slide" data-direction="reverse" class="ui-icon-user ui-btn-icon-bottom">Contactos</a></li>
+            <li><a href="#page3" style="background:#cacaca;" class="ui-icon-shop ui-btn-icon-bottom">Ventas</a></li>
+          </ul>
+        </div>
+    </div>
+    <div data-role="main" class="ui-content">
+        <!--center><a href="#" class="ui-btn ui-btn-inline ui-corner-all ui-icon-plus ui-btn-icon-left">Nueva oportunidad</a></center><!---->
+        <input type="text" name="tfBuscar2" id="tfBuscar2" placeholder="Buscar"><!---------Campo buscar-->
+             <div ng-controller="UsersControllerDos">
+                 <table  data-role="table" class="ui-responsive ui-shadow" id="myTable2">
+                      <thead>
+                          <tr style="background: #dddddd">
+                              <th data-priority="1"></th>
+                            </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="item in items" class="tarjeta2" >
+                          <td data-transition="slide" data-icon="minus" id="{{item.Etapa}}/{{item.Descripcion}}/{{item.Contacto}}/{{item.Compania}}/{{item.Asesor}}/{{item.Valor_oferta}}/{{item.Producto}}/{{item.Fecha_captura}}/{{item.Fecha_cierre}}/{{item.Actual_Close_Date}}/{{item.Fecha_proxima}}/{{item.Activo}}" onclick='verVenta(this.id);' >{{item.Producto}}<br>{{item.Contacto}}<br>{{item.Etapa}}</td>
+                        </tr>
+                      </tbody>
+                </table>
+            </div>
+        <div data-role="popup" id="myPopup3" class="ui-content">
+                <div data-role="controlgroup" data-type="vertical">
+                    <a href="#comunicador" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-comment ui-btn-icon-left">Comunicados</a>
+                    <a href="#ChangePass" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-gear ui-btn-icon-left">Cambiar contraseña</a>
+                    <a onclick="index();" data-transition="slide" class="ui-btn ui-corner-all ui-btn ui-icon-power ui-btn-icon-left">Salir</a>
+                </div>
+            </div>
+    </div>
+</div> 
+    
+        <script type="text/javascript">
+            function verVenta(x) {
+                var palabras2 = x.split("/");
+                var complet = "";
+                //alert(x);
+                //complet = palabras[0] + " " + palabras[1];
+                document.getElementById('verEtapa').value = palabras2[0];
+                document.getElementById('verDescripcion').value = palabras2[1];
+                document.getElementById('verContacto').value = palabras2[2];
+                document.getElementById('verCompania').value = palabras2[3];
+                document.getElementById('verAsesor').value = palabras2[4]; //--------------
+                document.getElementById('verValor_oferta').value = palabras2[5];
+                document.getElementById('verProducto').value = palabras2[6];
+                document.getElementById('verFecha_captura').value = palabras2[7];
+                document.getElementById('verFecha_cierre').value = palabras2[8]; //---------------
+                document.getElementById('verActual_Close_Date').value = palabras2[9];
+                document.getElementById('verFecha_proxima').value = palabras2[10];
+                document.getElementById('verActivo').value = palabras2[11];
+                //alert("si");//con esto ponemos que posicion es que cosa
+                location.href = "#viewSale";
+            }
+        </script>
+            <script type="text/javascript">
+            function verContacto(z) {
+                //alert(z);
+                var palabras = z.split("?");
+                var complet = "";
+                complet = palabras[0] + " " + palabras[1];
+                document.getElementById('verCompleto').innerHTML = complet;
+                //document.getElementById('verSaludo').innerHTML = palabras[0];
+                //document.getElementById('verNombre').innerHTML = palabras[1];
+                document.getElementById('verTipo').value = palabras[2];
+                document.getElementById('verCelular').value = palabras[3];
+                document.getElementById('verEmail').value = palabras[4];
+                document.getElementById('verAsesor1').value = palabras[5];
+                document.getElementById('verEmpresa').value = palabras[6];
+                document.getElementById('verTelefono').value = palabras[7];
+                document.getElementById('verFax').value = palabras[8];
+                document.getElementById('verSkype').value = palabras[9];
+                document.getElementById('verUrl').value = palabras[10]; //{{item.url}}?{{item.empresa}}?{{item.status}}?{{item.comentario}}
+                document.getElementById('verStatus').value = palabras[12];
+                document.getElementById('verComentario').value = palabras[13];
+                //alert(complet);//con esto ponemos que posicion es que cosa
+                location.href = "#viewContact";
+            }
+            function verEC(z) {
+                //alert(z);
+                var palabras = z.split("/");
+                var ecComplet = "";
+                ecComplet = palabras[0];
+                document.getElementById('ecCompleto').innerHTML = ecComplet;
+                document.getElementById('ecSubject').value = palabras[1];
+                document.getElementById('ecDescription').value = palabras[2];
+                document.getElementById('ecAuthor').value = palabras[3];
+                document.getElementById('ecCategory').value = palabras[4];
+                document.getElementById('ecArea').value = palabras[5];
+                document.getElementById('ecPriority').value = palabras[6];
+                document.getElementById('ecDate').value = palabras[7];
+                document.getElementById('ecActive').value = palabras[8];
+                //alert(complet);//con esto ponemos que posicion es que cosa
+                location.href = "#viewEC";
+            }
+        </script>
+          <!------------Ver contacto---------->
+<div data-role="page" id="viewContact">
+    <div data-role="header" style="background:#dddddd;">
+        <a href="#page2" data-transition="slide" data-direction="reverse" class="ui-btn ui-btn-inline ui-icon-carat-l ui-btn-icon-left ui-btn-icon-notext ui-corner-all ui-shadow">atras</a><H1 id="verCompleto"></H1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <div class="ui-field-contain">
+                <label >Tipo:</label>
+                    <input type="text" name="verTipo" id="verTipo" readonly="on">
+                <label >Celular:</label>
+                    <input type="text" name="verCelular" id="verCelular" readonly="on">
+                <label >Correo:</label>
+                    <input type="text" name="verEmail" id="verEmail" readonly="on">
+                <label >Empresa:</label>
+                    <input type="text" name="verEmpresa" id="verEmpresa" readonly="on">
+                <label >Teléfono:</label>
+                    <input type="text" name="verTelefono" id="verTelefono" readonly="on">
+                <label >Fax:</label>
+                    <input type="text" name="verFax" id="verFax" readonly="on">
+                <label >Skype:</label>
+                    <input type="text" name="verSkype" id="verSkype" readonly="on">
+                <label >URL:</label>
+                    <input type="text" name="verUrl" id="verUrl" readonly="on">
+                <label >Status:</label>
+                    <input type="text" name="verStatus" id="verStatus" readonly="on">
+                <label >Asesor:</label>
+                    <input type="text" name="verAsesor1" id="verAsesor1" readonly="on">
+                <label >Comentario:</label>
+                    <input type="text" name="verComentario" id="verComentario" readonly="on">
+      </div>
+    </div>
+</div> 
+        <!------------------------------>
+        <!-----------View EC------------->
+<div data-role="page" id="viewEC">
+    <div data-role="header" style="background:#dddddd;">
+        <a href="#comunicador" data-transition="slide" data-direction="reverse" class="ui-btn ui-btn-inline ui-icon-carat-l ui-btn-icon-left ui-btn-icon-notext ui-corner-all ui-shadow">atras</a><H1 id="ecCompleto"></H1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <div class="ui-field-contain">
+                <label >Asunto:</label>
+                    <input type="text" name="ecSubject" id="ecSubject" readonly="on">
+                <label >Descripción:</label>
+                    <textarea name="ecDescription" id="ecDescription" cols="4" rows="5" readonly="on"></textarea>
+                <label >Autor:</label>
+                    <input type="text" name="ecAuthor" id="ecAuthor" readonly="on">
+                <label >Categoría:</label>
+                    <input type="text" name="ecCategory" id="ecCategory" readonly="on">
+                <label >Área:</label>
+                    <input type="text" name="ecArea" id="ecArea" readonly="on">
+                <label >Prioridad:</label>
+                    <input type="text" name="ecPriority" id="ecPriority" readonly="on">
+                <label >Fecha:</label>
+                    <input type="text" name="ecDate" id="ecDate" readonly="on">
+                <label >Activo:</label>
+                    <input type="text" name="ecActive" id="ecActive" readonly="on">
+      </div>
+    </div>
+</div> 
+        <!-------------------------------->
+        <!------------Ver venta---------->
+<div data-role="page" id="viewSale">
+    <div data-role="header" style="background:#dddddd;">
+        <a href="#page3" data-transition="slide" data-direction="reverse" class="ui-btn ui-btn-inline ui-icon-carat-l ui-btn-icon-left ui-btn-icon-notext ui-corner-all ui-shadow">atras</a><H1 id="Oportunidad">Oportunidad:</H1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <div class="ui-field-contain">
+                <label >Etapa:</label>
+                    <input type="text" name="verEtapa" id="verEtapa" readonly="on">
+                <label >Descripcion:</label>
+                    <input type="text" name="verDescripcion" id="verDescripcion" readonly="on">
+                <label >Contacto:</label>
+                    <input type="text" name="verContacto" id="verContacto" readonly="on">
+                <label >Compania:</label>
+                    <input type="text" name="verCompania" id="verCompania" readonly="on">
+                <label >Asesor:</label>
+                    <input type="text" name="verAsesor" id="verAsesor" readonly="on">
+                <label >Valor oferta:</label>
+                    <input type="text" name="verValor_oferta" id="verValor_oferta" readonly="on">
+                <label >Producto:</label>
+                    <input type="text" name="verProducto" id="verProducto" readonly="on">
+                <label >Fecha captura:</label>
+                    <input type="text" name="verFecha_captura" id="verFecha_captura" readonly="on">
+                <label >Fecha cierre:</label>
+                    <input type="text" name="verFecha_cierre" id="verFecha_cierre" readonly="on">
+                <label >Actual Close_Date:</label>
+                    <input type="text" name="verActual_Close_Date" id="verActual_Close_Date" readonly="on">
+                <label >Fecha_proxima:</label>
+                    <input type="text" name="verFecha_proxima" id="verFecha_proxima" readonly="on">
+                <label >Activo:</label>
+                    <input type="text" name="verActivo" id="verActivo" readonly="on">
+      </div>
+    </div>
+</div> 
+        <!------------------------------>
+              
+<div data-role="page" id="page4" >
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <h1>hola</h1>
+    </div>
+</div> 
+
+        
+    </body>
+</html>

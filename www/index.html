@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" href="js/jquery.mobile-1.4.5.min.css">
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script src="Alertas/sweetalert.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="Alertas/sweetalert.css">
+        <script>
+
+            function Validar() {
+                var user = document.getElementById("nombre").value;
+                var pass = document.getElementById("pass").value;
+                $.ajax({
+                    type: "POST",
+                    url: "Logueo.php",
+                    async: true,
+                    success: function (datos) {
+                        var dataJson = eval(datos);
+                        var validaruser = false;
+                        var validarpass = false;
+                        for (var i in dataJson) {
+
+                            if (user == dataJson[i].arreglouser) {
+                                // alert("Si se encuentra usuario");
+                                validaruser = true;
+                                if (pass == dataJson[i].arreglopass) {
+                                    // alert("Si se encuentra usuario");
+                                    validarpass = true;
+                                    //  alert("Logueo correcto");
+
+                                } else { //alert("No esta"); 
+                                    //alert("Verifica tu contraseña");
+                                }
+                            } else { //alert("No esta"); 
+                                //alert("Verifica tu usuario");
+                            }
+
+                        }
+                        if (validaruser == false) {
+                            swal("Precaucion", "Verifique su usuario", "error");
+                        } else if (validarpass == false) {
+                            swal("Precaucion", "Verifique su contraseña", "error");
+                        }
+                        else if (validaruser == true && validarpass == true) {
+                            Enviar();
+                        }
+                    },
+                    error: function (obj, error, objError) {
+                    }
+                });
+            }
+            function ValidarNew() {
+                var user = document.getElementById("nombre").value;
+                var pass = document.getElementById("pass").value;
+                var resx = "";
+                var ruta = "http://www.empowerlabs.com/AppBSystemPromotoria/pass.php?usuario=" + user + "&pass=" + pass;
+                $.ajax({
+                    type: "POST",
+                    url: ruta,
+                    async: true,
+                    success: function (datos) {
+                        var dataJson = eval(datos);
+                        var validaruser = false;
+                        var validarpass = false;
+                        for (var i in dataJson) {
+
+                            resx = dataJson[i].logueo;
+                        }
+                         if (resx == "Usuario incorrecto") {
+                            swal("Precaución", "Verifique su usuario", "error");
+                        } else if (resx == "Pass incorrecta") {
+                            swal("Precaución", "Verifique su contraseña", "error");
+                        }
+                        else if (resx == "True") {
+                            //swal("Enviar", "Correcto", "error");
+                            Enviar();
+                        }
+                    },
+                    error: function (obj, error, objError) {
+                    }
+                });
+            }
+        </script>
+        <title>SysPromotoria</title>
+    </head>
+    <body>
+        <div data-role="page">
+    <div data-role="header" style="background:#dddddd;">
+        <h1 >Business System</h1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <input type="text" name="nombre" id="nombre" placeholder="Usuario (Intellibanks)">
+        <input type="password" name="pass" id="pass" placeholder="Contraseña">
+        <input type="button" value="Ingresar" onclick="ValidarNew();" >
+    </div>
+</div> 
+<script type="text/javascript">
+                   function Enviar() {
+                       var nombre = document.getElementById("nombre").value;
+                       location.href = 'inicio.html?nombre='+nombre;
+                   }
+</script>
+   
+        <script type="text/javascript" src="cordova.js"></script>
+
+    </body>
+</html>
